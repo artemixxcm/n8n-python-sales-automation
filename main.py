@@ -1,5 +1,9 @@
 import sqlite3
 from datetime import datetime
+import requests
+
+#Url de integração com N8N
+url = "http://localhost:5678/webhook-test/sales-data"
 
 #conectando ao banco de dados Sales.db
 
@@ -38,6 +42,22 @@ def inserir_venda(cursor):
     """, (product, category, value, quantity, date))
 
     print("Venda inserida!")
+
+     #Preparação do JSON para integração
+    data = {
+    "product": product,
+    "category": category,
+    "value": value,
+    "quantity": quantity,
+    "date": date
+}
+
+    # enviando para N8N
+    response = requests.post(url, json=data)
+
+    # imprimindo retorno
+    print("Status:", response.status_code)
+    print("Resposta:", response.text)
 
 # listagem de vendas e menu para os tipos de vendas e relatórios.
 def listar_vendas(cursor):
@@ -144,7 +164,7 @@ def limpar_tabela(cursor):
     if confirm.lower() == "s":
         cursor.execute("DELETE FROM sales")
         print(" Tabela limpa!")
-
+''
 # Relatórios
 def relatorio(cursor):
     print("\n--- Relatórios ---")

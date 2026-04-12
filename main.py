@@ -1,8 +1,9 @@
 import sqlite3
 from datetime import datetime
 import requests
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 import sqlite3
+import os
 
 
 #Url de integração com N8N
@@ -13,6 +14,15 @@ url = "http://localhost:5678/webhook-test/sales-data"
 conn = sqlite3.connect('sales.db')
 cursor = conn.cursor()
 app = Flask(__name__)
+
+API_KEY = "BCADLMF@GA12"
+
+# Metódo que vai validar se a KEY recebida no header está valida.
+def verify_api_key():
+    key = request.headers.get("x-api-key")
+    if key != API_KEY:
+        return jsonify({"error": "Unauthorized"}), 401
+
 
 DB_PATH = "sales.db"
 
@@ -197,6 +207,9 @@ def relatorio(cursor):
 #Criando uma API Get para expor os dados de venda 
 @app.route("/sales", methods=["GET"])
 def get_sales():
+  auth_error = verify_api_key()
+  if auth_error:
+        return auth_error
   conn = sqlite3.connect(DB_PATH)
   cursor = conn.cursor()
  

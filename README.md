@@ -46,15 +46,15 @@ Este projeto tem como objetivo a resolução desse problema ao:
 
 Fluxo da aplicação:
 
-1.API em Python (Flask) disponibiliza dados de vendas via endpoint protegido
+1. API em Python (Flask) disponibiliza dados de vendas via endpoint protegido
 
-2.n8n consome os dados via HTTP Request
+2. N8n consome os dados via HTTP Request
 
-3.Node em JavaScript estrutura os dados e gera prompts inteligentes
+3. Node em JavaScript estrutura os dados e gera prompts inteligentes
 
-4.OpenAI processa os dados e gera análises estratégicas
+4. OpenAI processa os dados e gera análises estratégicas
 
-5.Resultado é enviado automaticamente para o Telegram
+5. Resultado é enviado automaticamente para o Telegram
 
 ----
 

@@ -13,6 +13,22 @@ O projeto segue em evolução, com foco em melhorias de arquitetura, segurança 
 
 ----
 
+# Fluxo no n8n
+<p align="center">
+  <img src="images/fluxo-n8n.png" width="500"/>
+</p>
+
+# Estruturação dos dados
+<p align="center">
+  <img src="images/backend-python.png" width="500"/>
+</p>
+
+# Resultado da Análise via Telegram
+<p align="center">
+  <img src="images/report-telegram.png" width="500"/>
+</p>
+
+
 # Objetivos
 
 Pequenos negócios frequentemente possuem dados de vendas, mas não conseguem extrair valor estratégico deles.

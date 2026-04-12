@@ -23,7 +23,7 @@ O projeto segue em evolução, com foco em melhorias de arquitetura, segurança 
   <img src="assets/backend-python.png" width="700"/>
 </p>
 
-# Resultado da Análise via Telegram
+# Resultado da análise via Telegram
 <p align="center">
   <img src="assets/report-telegram.png" width="700"/>
 </p>
@@ -58,7 +58,7 @@ Fluxo da aplicação:
 
 ----
 
-# Tecnologias Utilizadas
+# Tecnologias utilizadas
 
 * Python
 * Flask
@@ -99,9 +99,9 @@ Evoluções planejadas:
 
 ---------
 
-# Evoluções Planejadas
+# Evoluções planejadas
 
-* Refatoração completa para Programação Orientada a Objetos (POO)
+* Refatoração para Programação Orientada a Objetos (POO)
 * Criação de dashboard front-end
 * Visualização gráfica de dados
 * Deploy em nuvem
@@ -109,7 +109,7 @@ Evoluções planejadas:
 
 ----
  
-# Diferencial do Projeto
+# Diferencial do projeto
 
 Este projeto se destaca por integrar:
 

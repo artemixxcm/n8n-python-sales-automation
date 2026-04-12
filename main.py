@@ -1,6 +1,9 @@
 import sqlite3
 from datetime import datetime
 import requests
+from flask import Flask, jsonify
+import sqlite3
+
 
 #Url de integração com N8N
 url = "http://localhost:5678/webhook-test/sales-data"
@@ -9,7 +12,9 @@ url = "http://localhost:5678/webhook-test/sales-data"
 
 conn = sqlite3.connect('sales.db')
 cursor = conn.cursor()
+app = Flask(__name__)
 
+DB_PATH = "sales.db"
 
 def conectar():
     return sqlite3.connect('sales.db')
@@ -28,7 +33,7 @@ def criar_tabela(cursor):
     )
     """)
 
-# inserir vendas
+# inserir vendas 
 def inserir_venda(cursor):
     product = input("Produto: ")
     category = input("Categoria: ")
@@ -45,12 +50,12 @@ def inserir_venda(cursor):
 
      #Preparação do JSON para integração
     data = {
-    "product": product,
-    "category": category,
-    "value": value,
-    "quantity": quantity,
-    "date": date
-}
+        "product": product,
+        "category": category,
+        "value": value,
+        "quantity": quantity,
+        "date": date
+    }
 
     # enviando para N8N
     response = requests.post(url, json=data)
@@ -87,12 +92,12 @@ def listar_vendas(cursor):
 
         for row in rows:
             print(f"""
-            ID: {row[0]}
-            Produto: {row[1]}
-            Categoria: {row[2]}
-            Valor: {row[3]}
-            Quantidade: {row[4]}
-            ----------------------
+                ID: {row[0]}
+                Produto: {row[1]}
+                Categoria: {row[2]}
+                Valor: {row[3]}
+                Quantidade: {row[4]}
+                ----------------------
             """)
 
 #Buscar vendas por período 
@@ -101,9 +106,10 @@ def listar_vendas(cursor):
         dateEnd = input("Data (ex: 2026/03/30): ")
         
         cursor.execute("""
-    SELECT * FROM sales
-    WHERE date BETWEEN ? AND ?
-    """,(dateStart,dateEnd))
+            SELECT * FROM sales
+            WHERE date BETWEEN ? AND ?
+            """,(dateStart,dateEnd))
+        
         rows = cursor.fetchall()
 
         print ("\n ----- Vendas por período -----")
@@ -128,14 +134,14 @@ def listar_vendas(cursor):
 
         for row in rows:
                 print(f"""
-        ID: {row[0]}
-        Produto: {row[1]}
-        Categoria: {row[2]}
-        Valor: {row[3]}
-        Quantidade: {row[4]}
-        Data: {row[5]}
-        ----------------------
-        """)
+                    ID: {row[0]}
+                    Produto: {row[1]}
+                    Categoria: {row[2]}
+                    Valor: {row[3]}
+                    Quantidade: {row[4]}
+                    Data: {row[5]}
+                    ---------------------
+                """)
     
     elif opcao == "4":
         cursor.execute ("SELECT category, SUM(quantity), SUM(value) FROM sales GROUP BY category") 
@@ -145,11 +151,11 @@ def listar_vendas(cursor):
 
         for row in rows:
             print (f"""
-        Categoria: {row[0]}
-        Quantidade: {row[1]}
-        TOTAL: {row[2]}
-        --------------
-        """)    
+                    Categoria: {row[0]}
+                    Quantidade: {row[1]}
+                    TOTAL: {row[2]}
+                    --------------
+                    """)    
 
     else:
         print("Voltar ao menu")
@@ -157,15 +163,13 @@ def listar_vendas(cursor):
 conn.close()               
 
 
-
-# Limpar os dados da tabela.
 def limpar_tabela(cursor):
     confirm = input("Tem certeza que deseja apagar tudo? (s/n): ")
     if confirm.lower() == "s":
         cursor.execute("DELETE FROM sales")
         print(" Tabela limpa!")
 ''
-# Relatórios
+
 def relatorio(cursor):
     print("\n--- Relatórios ---")
 
@@ -189,6 +193,33 @@ def relatorio(cursor):
     print("\n Vendas por categoria:")
     for row in cursor.fetchall():
         print(f"{row[0]}: {row[1]}")
+
+#Criando uma API Get para expor os dados de venda 
+@app.route("/sales", methods=["GET"])
+def get_sales():
+  conn = sqlite3.connect(DB_PATH)
+  cursor = conn.cursor()
+ 
+  cursor.execute("SELECT product, category, value, quantity, date FROM sales")
+
+  rows = cursor.fetchall()
+
+  conn.close()
+  
+  sales = [
+        {
+            "product":  row[0],
+            "category": row[1],
+            "value":    row[2],
+            "quantity": row[3],
+            "date":     row[4]
+        }
+        for row in rows
+    ]
+  return jsonify(sales)
+
+if __name__ == "__main__":
+        app.run(port=5050, debug=True)
 
 # Menu inicial 
 def menu():

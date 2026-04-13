@@ -1,33 +1,42 @@
-import sqlite3
-from datetime import datetime
-import requests
-from flask import Flask, request, jsonify
-import sqlite3
 import os
+from dotenv import load_dotenv
+from flask import Flask, jsonify
+from database import DatabaseManager
+from repository import SaleRepository
+from services import N8nService
+from cli import SalesCLI
 
+#Carrega o .env
+load_dotenv()
 
-#Url de integração com N8N
-url = "http://localhost:5678/webhook-test/sales-data"
+# Conexão n8n
 
-#conectando ao banco de dados Sales.db
-
-conn = sqlite3.connect('sales.db')
-cursor = conn.cursor()
+N8N_URL = "http://localhost:5678/webhook-test/sales-data"
+DB_PATH = "sales.db"
+API_KEY = os.getenv("API_KEY") 
 app = Flask(__name__)
 
-API_KEY = "BCADLMF@GA12"
-
 # Metódo que vai validar se a KEY recebida no header está valida.
+
 def verify_api_key():
-    key = request.headers.get("x-api-key")
-    if key != API_KEY:
+     key = request.headers.get("x-api-key")
+     if key != API_KEY:
         return jsonify({"error": "Unauthorized"}), 401
 
+  
+#API REST GET para expor dados de venda    
 
-DB_PATH = "sales.db"
+@app.route("/sales", methods=["GET"])
+def get_sales():
+    auth = verify_api_key()
+    if auth:
+        return auth
+    with DatabaseManager(DB_PATH) as db:
+        repo = SaleRepository(db)
+        vendas = repo.buscar_todas()
+    return jsonify([v.to_dict() for v in vendas])    
 
-def conectar():
-    return sqlite3.connect('sales.db')
+
 
 #Antes de criar tabela verificar se a tabela já existe na base.
 
@@ -204,14 +213,7 @@ def relatorio(cursor):
     for row in cursor.fetchall():
         print(f"{row[0]}: {row[1]}")
 
-#Criando uma API Get para expor os dados de venda 
-@app.route("/sales", methods=["GET"])
-def get_sales():
-  auth_error = verify_api_key()
-  if auth_error:
-        return auth_error
-  conn = sqlite3.connect(DB_PATH)
-  cursor = conn.cursor()
+
  
   cursor.execute("SELECT product, category, value, quantity, date FROM sales")
 

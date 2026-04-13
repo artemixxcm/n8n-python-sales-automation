@@ -17,7 +17,6 @@ class SalesCLI:
 
         sale = Sale(product, category, value, quantity, date)
         self.repo.inserir(sale)
-        self.n8n.enviar_venda(sale.to_dict())
         print("✅ Venda inserida!")
 
     def listar_vendas(self):
